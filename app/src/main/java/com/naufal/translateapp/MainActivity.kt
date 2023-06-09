@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
 import android.text.Editable
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private var items = arrayOf("English", "Indonesia", "Italy", "France", "Japanese")
     private var conditions = DownloadConditions.Builder().requireWifi().build()
     private val speechRec = 102
+    private lateinit var textToSpeech: TextToSpeech
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +61,14 @@ class MainActivity : AppCompatActivity() {
         binding.voiceSpeechButton.setOnClickListener {
             speechInput()
         }
+
+        binding.ibInput.setOnClickListener {
+            inputToSpeech()
+        }
+
+        binding.ibOutput.setOnClickListener {
+            outputToSpeech()
+        }
     }
 
     private fun selectFrom(): String {
@@ -75,7 +85,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun selectTo(): String {
         return when (binding.languageTo.text.toString()) {
-            "" -> TranslateLanguage.HINDI
+            "" -> TranslateLanguage.ENGLISH
             "English" -> TranslateLanguage.ENGLISH
             "Indonesia" -> TranslateLanguage.INDONESIAN
             "Italy" -> TranslateLanguage.ITALIAN
@@ -103,6 +113,49 @@ class MainActivity : AppCompatActivity() {
             voiceSpeech.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             voiceSpeech.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak")
             startActivityForResult(voiceSpeech,speechRec)
+        }
+    }
+
+    private fun inputToSpeech() {
+        textToSpeech = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = textToSpeech.setLanguage(getLocaleFromLanguage(binding.languageFrom.text.toString()))
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(this, "Language not supported", Toast.LENGTH_SHORT).show()
+                } else {
+                    val text = binding.tvInput.text.toString()
+                    textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+            } else {
+                Toast.makeText(this, "Initialization failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun outputToSpeech() {
+        textToSpeech = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                val result = textToSpeech.setLanguage(getLocaleFromLanguage(binding.languageFrom.text.toString()))
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Toast.makeText(this, "Language not supported", Toast.LENGTH_SHORT).show()
+                } else {
+                    val text = binding.tvOutput.text.toString()
+                    textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+            } else {
+                Toast.makeText(this, "Initialization failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun getLocaleFromLanguage(language: String): Locale {
+        return when (language) {
+            "English" -> Locale.ENGLISH
+            "Indonesia" -> Locale("id", "ID")
+            "Italy" -> Locale.ITALIAN
+            "France" -> Locale.FRENCH
+            "Japanese" -> Locale.JAPANESE
+            else -> Locale.ENGLISH
         }
     }
 }
