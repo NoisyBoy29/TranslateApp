@@ -98,28 +98,34 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == speechRec && resultCode == Activity.RESULT_OK){
-            val result:ArrayList<String>? = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            binding.tvInput.text = Editable.Factory.getInstance().newEditable(result?.get(0).toString())
-
+        if (requestCode == speechRec && resultCode == Activity.RESULT_OK) {
+            val result: ArrayList<String>? =
+                data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            binding.tvInput.text =
+                Editable.Factory.getInstance().newEditable(result?.get(0).toString())
         }
     }
+
     private fun speechInput() {
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this, "Speech Failed", Toast.LENGTH_SHORT).show()
         } else {
             val voiceSpeech = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-            voiceSpeech.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            voiceSpeech.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
             voiceSpeech.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
             voiceSpeech.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak")
-            startActivityForResult(voiceSpeech,speechRec)
+            startActivityForResult(voiceSpeech, speechRec)
         }
     }
 
     private fun inputToSpeech() {
         textToSpeech = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                val result = textToSpeech.setLanguage(getLocaleFromLanguage(binding.languageFrom.text.toString()))
+                val result =
+                    textToSpeech.setLanguage(getLocaleFromLanguage(binding.languageFrom.text.toString()))
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Toast.makeText(this, "Language not supported", Toast.LENGTH_SHORT).show()
                 } else {
@@ -135,7 +141,8 @@ class MainActivity : AppCompatActivity() {
     private fun outputToSpeech() {
         textToSpeech = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                val result = textToSpeech.setLanguage(getLocaleFromLanguage(binding.languageFrom.text.toString()))
+                val result =
+                    textToSpeech.setLanguage(getLocaleFromLanguage(binding.languageTo.text.toString()))
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Toast.makeText(this, "Language not supported", Toast.LENGTH_SHORT).show()
                 } else {

@@ -4,6 +4,7 @@
     <string name="input_text">Input Text</string>
     <string name="output">Output</string>
     <string name="output_text">Output Text</string>
-    <string name="select">SELECT</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
     <string name="translate">TRANSLATE</string>
 </resources>
